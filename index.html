@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>dashboard-vanilla-js</title>
+    <link rel="icon" href="./src/assets/icons/icons8-favicon-16.png" />
+
+    <link rel="stylesheet" href="./src/css/reset.css" />
+    <link rel="stylesheet" href="./src/css/styles.css" />
+</head>
+
+<body class="">
+    <div class="dashboard">
+        <section class="weather">
+            <h2 class="weather__title">Погода</h2>
+            <form class="weather__form">
+                <input type="text" class="weather-input" list="city-list" placeholder="Введите город" autocomplete="off"
+                    required />
+                <!-- Этот <datalist> будет заполняться опциями через JS -->
+                <datalist id="city-list"></datalist>
+
+                <button type="submit">Обновить</button>
+            </form>
+            <span class="weather__city">——————————————————————</span>
+            <div class="weather__info">
+                <img class="weather__icon" src="./src/assets/icons/погода.png" alt="Иконка погоды" />
+                <span class="weather__temp">—°C</span>
+                <span class="weather__desc">—</span>
+            </div>
+        </section>
+
+        <section class="finance">
+            <h2>Финансы</h2>
+            <div id="finance-container" class="finance__list"></div>
+        </section>
+
+        <section class="planner">
+            <h2>Путешествия</h2>
+            <button class="planner__add-day">Добавить день</button>
+            <div class="planner__days">
+                <!-- JS будет рендерить здесь .planner__day -->
+            </div>
+            <div class="planner__overall-total">
+                Общий бюджет: <span class="planner__total-value">0</span>₽
+            </div>
+        </section>
+    </div>
+    <footer class="footer">
+        <small>&copy; 2025 dashboard-vanilla-js</small>
+    </footer>
+
+    <script type="module" src="./src/js/main.js"></script>
+</body>
+
+</html>
