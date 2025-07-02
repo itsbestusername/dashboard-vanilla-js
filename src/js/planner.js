@@ -1,217 +1,248 @@
-// src/js/planner.js
+let trips = JSON.parse(localStorage.getItem('trips')) || [];
+let activeTripId = null;
 
-// 1. Хранение данных в localStorage
-let plannerData = JSON.parse(localStorage.getItem('plannerData')) || [];
-
-/** Сохраняет текущее состояние в localStorage */
 function save() {
-    localStorage.setItem('plannerData', JSON.stringify(plannerData));
+  localStorage.setItem('trips', JSON.stringify(trips));
 }
 
-/** Считает итоговую сумму слотов в одном дне */
+// ——————————————————————————————————————
+// 2) Утилиты подсчёта
+// ——————————————————————————————————————
 function calcDayTotal(day) {
-    return day.slots.reduce((sum, slot) => sum + (slot.cost || 0), 0);
+  return day.slots.reduce((s, slot) => s + (slot.cost || 0), 0);
+}
+function calcTripTotal(trip) {
+  return trip.days.reduce((s, d) => s + calcDayTotal(d), 0);
 }
 
-/** Считает общий бюджет по всем дням */
-function calcOverallTotal() {
-    return plannerData.reduce((sum, day) => sum + calcDayTotal(day), 0);
+// ——————————————————————————————————————
+// 3) Рендер overview (список путешествий)
+// ——————————————————————————————————————
+function renderOverview() {
+  const out = document.querySelector('#planner-overview .trip-list');
+  out.innerHTML = trips.map(trip => `
+    <div class="trip" data-id="${trip.id}">
+      <input class="trip__title-input" type="text" value="${trip.title || ''}" placeholder="Название путешествия" />
+      <button class="trip__open">✎</button>
+      <button class="trip__remove">×</button>
+    </div>
+  `).join('');
+
+  // Добавим обработчики для input
+  document.querySelectorAll('.trip__title-input').forEach(input => {
+    input.addEventListener('input', function (e) {
+      const tripId = Number(e.target.closest('.trip').dataset.id);
+      const trip = trips.find(t => t.id === tripId);
+      if (trip) {
+        trip.title = e.target.value;
+        save();
+      }
+    });
+  });
 }
 
-/** Обновляет на странице сумму для одного дня */
-function updateDayTotalInDOM(dayId) {
-    const day = plannerData.find(d => d.id === dayId);
-    if (!day) return;
+// ——————————————————————————————————————
+// 4) Рендер details (дни выбранного trip)
+// ——————————————————————————————————————
+function renderDetails() {
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+
+  document.querySelector('#planner-details .details__title')
+    .textContent = trip.title || 'Без названия';
+
+  const dc = document.querySelector('#planner-details .planner__days');
+  dc.innerHTML = trip.days.map(day => {
     const total = calcDayTotal(day);
-    const dayEl = document.querySelector(`.planner__day[data-day-id="${dayId}"]`);
-    if (dayEl) {
-        const span = dayEl.querySelector('.day__total span');
-        if (span) span.textContent = total;
-    }
-}
-
-/** Обновляет на странице общий бюджет */
-function updateOverallTotalInDOM() {
-    const overall = calcOverallTotal();
-    const overallSpan = document.querySelector('.planner__total-value');
-    if (overallSpan) overallSpan.textContent = overall;
-}
-
-/**
- * Полностью рендерит все дни и их слоты.
- * Вызывается только при add/remove дней и слотов.
- */
-export function renderPlanner() {
-    const container = document.querySelector('.planner__days');
-    container.innerHTML = ''; // очистить
-
-    plannerData.forEach(day => {
-        const dayTotal = calcDayTotal(day);
-        const dayEl = document.createElement('div');
-        dayEl.className = 'planner__day';
-        dayEl.dataset.dayId = day.id;
-
-        dayEl.innerHTML = `
-      <div class="day__header">
-        <input 
-          type="text" 
-          class="day__title" 
-          placeholder="Название дня" 
-          value="${day.title}" />
-        <button class="day__remove">×</button>
-      </div>
-      <div class="day__slots">
-        ${day.slots.map(slot => `
-          <div class="slot" data-slot-id="${slot.id}">
-            <input type="time" 
-                   class="slot__time" 
-                   value="${slot.time}" />
-            <input type="text" 
-                   class="slot__desc" 
-                   placeholder="Описание" 
-                   value="${slot.description}" />
-            <input type="number" 
-                   class="slot__cost" 
-                   min="0" 
-                   value="${slot.cost}" />
-            <button class="slot__remove">×</button>
-          </div>
-        `).join('')}
-      </div>
-      <button class="day__add-slot">Добавить событие</button>
-      <div class="day__total">
-        Итого за день: <span>${dayTotal}</span>₽
+    return `
+      <div class="planner__day" data-id="${day.id}">
+      <button class="day__remove">×</button>
+        <input type="text" class="day__title" value="${day.title}" 
+               placeholder="Название дня" />
+        <div class="day__slots">
+          ${day.slots.map(slot => `
+            <div class="slot" data-id="${slot.id}">
+              <input type="time" class="slot__time" value="${slot.time}" />
+              <input type="text" class="slot__desc" value="${slot.description}" 
+                     placeholder="Описание" />
+              <input type="number" class="slot__cost" min="0" value="${slot.cost}" />
+              <button class="slot__remove">×</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="day__actions">
+          <button class="day__add-slot">+ Событие</button>
+          <div class="day__total">Итого: <span>${total}</span>₽</div>
+        </div>
       </div>
     `;
+  }).join('');
 
-        container.append(dayEl);
-    });
-
-    // После перерисовки обновляем общий бюджет
-    updateOverallTotalInDOM();
+  document.querySelector('#planner-details .planner__total-value')
+    .textContent = calcTripTotal(trip);
 }
 
-// === CRUD для дней ===
+// ——————————————————————————————————————
+// 5) Показывать/скрывать панели
+// ——————————————————————————————————————
+function showOverview() {
+  document.getElementById('planner-overview').classList.remove('hidden');
+  document.getElementById('planner-details').classList.add('hidden');
+  renderOverview();
+}
+function showDetails() {
+  document.getElementById('planner-overview').classList.add('hidden');
+  document.getElementById('planner-details').classList.remove('hidden');
+  renderDetails();
+}
 
-/** Добавляет новый пустой день */
+// ——————————————————————————————————————
+// 6) CRUD-путешествия
+// ——————————————————————————————————————
+export function addTrip() {
+  const id = Date.now();
+  trips.push({ id, title: '', days: [] });
+  save();
+  renderOverview();
+}
+export function removeTrip(id) {
+  trips = trips.filter(t => t.id !== id);
+  save();
+  showOverview();
+}
+export function openTrip(id) {
+  activeTripId = id;
+  showDetails();
+}
+
+// ——————————————————————————————————————
+// 7) CRUD-дни & слоты
+// ——————————————————————————————————————
 export function addDay() {
-    plannerData.push({
-        id: Date.now(),
-        title: '',
-        slots: []
-    });
-    save();
-    renderPlanner();
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+  const newDay = {
+    id: Date.now(),
+    title: '',
+    slots: []
+  };
+  trip.days.push(newDay);
+  save();
+  renderDetails();
 }
 
-/** Удаляет день по его id */
 export function removeDay(dayId) {
-    plannerData = plannerData.filter(d => d.id !== dayId);
-    save();
-    renderPlanner();
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+  trip.days = trip.days.filter(d => d.id !== dayId);
+  save();
+  renderDetails();
 }
-
-/** Обновляет название дня */
-export function updateDayTitle(dayId, newTitle) {
-    const day = plannerData.find(d => d.id === dayId);
-    if (day) {
-        day.title = newTitle;
-        save();
-        // не перерисовываем весь DOM, сохраняя фокус
-    }
+export function updateDayTitle(dayId, value) {
+  const trip = trips.find(t => t.id === activeTripId);
+  const day = trip.days.find(d => d.id === dayId);
+  day.title = value; save(); /* можно без renderDetails() */
 }
-
-// === CRUD для слотов ===
-
-/** Добавляет новый слот в указанный день */
 export function addSlot(dayId) {
-    const day = plannerData.find(d => d.id === dayId);
-    if (!day) return;
-    day.slots.push({
-        id: Date.now(),
-        time: '',
-        description: '',
-        cost: 0
-    });
-    save();
-    renderPlanner();
+  const trip = trips.find(t => t.id === activeTripId);
+  const day = trip.days.find(d => d.id === dayId);
+  day.slots.push({ id: Date.now(), time: '', description: '', cost: 0 });
+  save(); renderDetails();
 }
-
-/** Удаляет слот из дня */
 export function removeSlot(dayId, slotId) {
-    const day = plannerData.find(d => d.id === dayId);
-    if (!day) return;
-    day.slots = day.slots.filter(s => s.id !== slotId);
-    save();
-    renderPlanner();
+  const trip = trips.find(t => t.id === activeTripId);
+  const day = trip.days.find(d => d.id === dayId);
+  day.slots = day.slots.filter(s => s.id !== slotId);
+  save(); renderDetails();
+}
+// В том же файле planner.js, до определения updateSlot:
+function updateDayTotalInDOM(dayId) {
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+  const day = trip.days.find(d => d.id === dayId);
+  if (!day) return;
+  const total = day.slots.reduce((sum, s) => sum + (s.cost || 0), 0);
+
+  const span = document.querySelector(
+    `.planner__day[data-id="${dayId}"] .day__total span`
+  );
+  if (span) span.textContent = total;
 }
 
-/** Обновляет поле слота (time, description или cost) */
+function updateOverallTotalInDOM() {
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+  const overall = trip.days.reduce(
+    (sumD, d) => sumD + d.slots.reduce((s, x) => s + (x.cost || 0), 0),
+    0
+  );
+  const span = document.querySelector('#planner-details .planner__total-value');
+  if (span) span.textContent = overall;
+}
+
+// А вот сама export функция:
 export function updateSlot(dayId, slotId, field, value) {
-    const day = plannerData.find(d => d.id === dayId);
-    if (!day) return;
-    const slot = day.slots.find(s => s.id === slotId);
-    if (!slot) return;
+  const trip = trips.find(t => t.id === activeTripId);
+  if (!trip) return;
+  const day = trip.days.find(d => d.id === dayId);
+  if (!day) return;
+  const slot = day.slots.find(s => s.id === slotId);
+  if (!slot) return;
 
-    slot[field] = field === 'cost' ? Number(value) : value;
-    save();
+  // 1) Обновляем модель
+  slot[field] = field === 'cost' ? Number(value) : value;
+  save(); // или saveState(), как у вас называется
 
-    // обновляем суммы без полной перерисовки
-    if (field === 'cost') {
-        updateDayTotalInDOM(dayId);
-        updateOverallTotalInDOM();
-    }
+  // 2) Только для cost — обновляем видимые итоги
+  if (field === 'cost') {
+    updateDayTotalInDOM(dayId);
+    updateOverallTotalInDOM();
+  }
 }
 
-// === Инициализация событий ===
-
-/** Навешивает все клики и input-обработчики */
+// ——————————————————————————————————————
+// 8) Инициализация
+// ——————————————————————————————————————
 export function initPlanner() {
-    // Добавление дня
-    document
-        .querySelector('.planner__add-day')
-        .addEventListener('click', addDay);
+  // 1) кнопка +путешествие
+  document.querySelector('.planner__add-trip')
+    .addEventListener('click', addTrip);
 
-    // Делегирование по кликам внутри дней
-    const daysContainer = document.querySelector('.planner__days');
-    daysContainer.addEventListener('click', e => {
-        const dayEl = e.target.closest('.planner__day');
-        if (!dayEl) return;
-        const dayId = Number(dayEl.dataset.dayId);
+  // 2) список overview
+  document.querySelector('.trip-list').addEventListener('click', e => {
+    const id = Number(e.target.closest('.trip').dataset.id);
+    if (e.target.matches('.trip__remove')) removeTrip(id);
+    else if (e.target.matches('.trip__open')) openTrip(id);
+  });
 
-        if (e.target.matches('.day__remove')) {
-            removeDay(dayId);
-        }
-        else if (e.target.matches('.day__add-slot')) {
-            addSlot(dayId);
-        }
-        else if (e.target.matches('.slot__remove')) {
-            const slotEl = e.target.closest('.slot');
-            const slotId = Number(slotEl.dataset.slotId);
-            removeSlot(dayId, slotId);
-        }
+  // 3) детали
+  document.querySelector('.planner__back')
+    .addEventListener('click', showOverview);
+  document.querySelector('.planner__add-day')
+    .addEventListener('click', addDay);
+
+  document.querySelector('#planner-details').addEventListener('click', e => {
+    const dayEl = e.target.closest('.planner__day');
+    if (!dayEl) return;
+    const dayId = Number(dayEl.dataset.id);
+    if (e.target.matches('.day__remove')) removeDay(dayId);
+    if (e.target.matches('.day__add-slot')) addSlot(dayId);
+    if (e.target.matches('.slot__remove')) {
+      const slotId = Number(e.target.closest('.slot').dataset.id);
+      removeSlot(dayId, slotId);
+    }
+  });
+
+  document.querySelector('#planner-details')
+    .addEventListener('input', e => {
+      const dayEl = e.target.closest('.planner__day');
+      if (!dayEl) return;
+      const dayId = Number(dayEl.dataset.id);
+      if (e.target.matches('.day__title')) updateDayTitle(dayId, e.target.value);
+      if (e.target.matches('.slot__time')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'time', e.target.value);
+      if (e.target.matches('.slot__desc')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'description', e.target.value);
+      if (e.target.matches('.slot__cost')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'cost', e.target.value);
     });
 
-    // Делегирование по вводу в полях
-    daysContainer.addEventListener('input', e => {
-        const dayEl = e.target.closest('.planner__day');
-        if (!dayEl) return;
-        const dayId = Number(dayEl.dataset.dayId);
-
-        if (e.target.matches('.day__title')) {
-            updateDayTitle(dayId, e.target.value);
-        }
-        else if (e.target.matches('.slot__time')) {
-            const slotId = Number(e.target.closest('.slot').dataset.slotId);
-            updateSlot(dayId, slotId, 'time', e.target.value);
-        }
-        else if (e.target.matches('.slot__desc')) {
-            const slotId = Number(e.target.closest('.slot').dataset.slotId);
-            updateSlot(dayId, slotId, 'description', e.target.value);
-        }
-        else if (e.target.matches('.slot__cost')) {
-            const slotId = Number(e.target.closest('.slot').dataset.slotId);
-            updateSlot(dayId, slotId, 'cost', e.target.value);
-        }
-    });
+  showOverview();
 }

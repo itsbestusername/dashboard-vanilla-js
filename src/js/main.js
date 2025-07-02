@@ -1,11 +1,11 @@
 import { renderWeather, renderFinanceList } from "./ui.js";
-import { fetchGeo, fetchWeather, fetchRates  } from "./api.js";
+import { fetchGeo, fetchWeather, fetchRates } from "./api.js";
 import { RATES_ALL_SYMBOLS, RATES_DEFAULT_BASE } from "./config.js";
-import { initPlanner, renderPlanner } from './planner.js';
+import { initPlanner } from './planner.js';
 
 async function loadWeather(city) {
   try {
-    const coords      = await fetchGeo(city);
+    const coords = await fetchGeo(city);
     const weatherData = await fetchWeather(coords);
     renderWeather(weatherData, city);
   } catch (err) {
@@ -17,7 +17,7 @@ async function loadWeather(city) {
 }
 
 async function loadFinance() {
-try {
+  try {
     const rates = await fetchRates(RATES_DEFAULT_BASE, RATES_ALL_SYMBOLS);
     renderFinanceList(rates);
   } catch (err) {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFinance();
 
   // Форма погоды
-  const weatherForm  = document.querySelector('.weather__form');
+  const weatherForm = document.querySelector('.weather__form');
   const weatherInput = document.querySelector('.weather-input');
   weatherForm.addEventListener('submit', event => {
     event.preventDefault();
@@ -42,10 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newCity) return;
     localStorage.setItem('dashboardCity', newCity);
     loadWeather(newCity);
+    weatherInput.value = ""; // Очищаем поле ввода
   });
 
-    // Инициализируем планировщик
+  // Инициализируем планировщик
   initPlanner();
-  renderPlanner();
+  // renderPlanner();
 
 });

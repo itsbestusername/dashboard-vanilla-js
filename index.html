@@ -15,7 +15,10 @@
 <body class="">
     <div class="dashboard">
         <section class="weather">
-            <h2 class="weather__title">Погода</h2>
+            <div class="weather__header">
+                <h2 class="weather__title">Погода</h2>
+                <img class="weather__icon" src="./src/assets/icons/погода.png" alt="Иконка погоды" />
+            </div>
             <form class="weather__form">
                 <input type="text" class="weather-input" list="city-list" placeholder="Введите город" autocomplete="off"
                     required />
@@ -26,30 +29,50 @@
             </form>
             <span class="weather__city">——————————————————————</span>
             <div class="weather__info">
-                <img class="weather__icon" src="./src/assets/icons/погода.png" alt="Иконка погоды" />
                 <span class="weather__temp">—°C</span>
                 <span class="weather__desc">—</span>
             </div>
         </section>
 
         <section class="finance">
-            <h2>Финансы</h2>
+            <div class="finance__header">
+                <h2>Финансы</h2>
+                <img class="finance__icon" src="./src/assets/icons/деньги.png" alt="Иконка денег" />
+            </div>
             <div id="finance-container" class="finance__list"></div>
+        </section>
+
+        <section class="todo">
+            <h2>Задачи</h2>
+            <div class="todo__list"><!-- Здесь появится список задач --></div>
         </section>
 
         <section class="planner">
             <h2>Путешествия</h2>
-            <button class="planner__add-day">Добавить день</button>
-            <div class="planner__days">
-                <!-- JS будет рендерить здесь .planner__day -->
+
+            <!-- 1) Список путешествий -->
+            <div id="planner-overview">
+                <button class="planner__add-trip">Добавить новое путешествие</button>
+                <div class="trip-list"><!-- здесь JS вставит карточки trip --></div>
             </div>
-            <div class="planner__overall-total">
-                Общий бюджет: <span class="planner__total-value">0</span>₽
+
+            <!-- 2) Детали одного путешествия -->
+            <div id="planner-details" class="hidden">
+                <div class="details__header">
+                    <button class="planner__back">← Назад</button>
+                    <h3 class="details__title"></h3>
+                    <button class="planner__add-day">+ Добавить день</button>
+                </div>
+                <div class="planner__days"><!-- JS вставит .planner__day --></div>
+                <div class="planner__overall-total">
+                    Общий бюджет: <span class="planner__total-value">0</span>₽
+                </div>
             </div>
         </section>
+
     </div>
     <footer class="footer">
-        <small>&copy; 2025 dashboard-vanilla-js</small>
+        <small>&copy; 2025 Travel Planner by Kimi</small>
     </footer>
 
     <script type="module" src="./src/js/main.js"></script>
