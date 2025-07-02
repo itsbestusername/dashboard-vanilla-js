@@ -1,9 +1,9 @@
-//все «магические строки»: базовые URL-адреса API, имена параметров, и т. п.
+// все «магические строки»: базовые URL-адреса API, имена параметров, и т. п.
 
-export const GEOCODE_URL = "https://nominatim.openstreetmap.org/search";
-export const WEATHER_URL = "https://api.open-meteo.com/v1/forecast";
-export const DEFAULT_LANGUAGE = "ru";
-export const DEFAULT_UNITS = "metric";
+export const GEOCODE_URL = 'https://nominatim.openstreetmap.org/search';
+export const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+export const DEFAULT_LANGUAGE = 'ru';
+export const DEFAULT_UNITS = 'metric';
 
 // URL для обменников
 export const RATES_BASE_URL = 'https://open.er-api.com/v6/latest';
@@ -31,8 +31,4 @@ export const CURRENCY_NAMES = {
   AMD: 'Армянский драм',
 };
 
-// URL для геокодирования (адрес → coords)
-export const GEO_BASE_URL       = 'https://nominatim.openstreetmap.org/search';
-// (Если планируешь карту через iframe)
-export const MAP_EMBED_BASE     = 'https://www.google.com/maps/embed/v1/place';
-export const MAP_EMBED_KEY      = 'ВАШ_GOOGLE_API_KEY';
+export const STORAGE_KEY = 'dashboardTasks';

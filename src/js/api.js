@@ -1,14 +1,14 @@
-import { GEOCODE_URL, WEATHER_URL, RATES_BASE_URL } from "./config.js";
+import { GEOCODE_URL, WEATHER_URL, RATES_BASE_URL } from './config.js';
 
 /**
- * @param {string} city — любой город, например "Moscow"
+ * @param {string} city — любой город, например 'Moscow'
  */
 export async function fetchGeo(city) {
   // 1) Собираем URL
   const url = new URL(GEOCODE_URL);
-  url.searchParams.set("q", city);
-  url.searchParams.set("format", "json");
-  url.searchParams.set("limit", "1");
+  url.searchParams.set('q', city);
+  url.searchParams.set('format', 'json');
+  url.searchParams.set('limit', '1');
 
   // 2) Делаем запрос
   const response = await fetch(url.toString());
@@ -21,15 +21,15 @@ export async function fetchGeo(city) {
   const place = data[0];
   return {
     lat: parseFloat(place.lat),
-    lon: parseFloat(place.lon),
+    lon: parseFloat(place.lon)
   };
 }
 
 export async function fetchWeather({ lat, lon }) {
   const url = new URL(WEATHER_URL);
-  url.searchParams.set("latitude", lat);
-  url.searchParams.set("longitude", lon);
-  url.searchParams.set("current_weather", "true");
+  url.searchParams.set('latitude', lat);
+  url.searchParams.set('longitude', lon);
+  url.searchParams.set('current_weather', 'true');
 
   const response = await fetch(url.toString());
   if (!response.ok) {

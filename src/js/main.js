@@ -1,7 +1,8 @@
-import { renderWeather, renderFinanceList } from "./ui.js";
-import { fetchGeo, fetchWeather, fetchRates } from "./api.js";
-import { RATES_ALL_SYMBOLS, RATES_DEFAULT_BASE } from "./config.js";
+import { renderWeather, renderFinanceList } from './ui.js';
+import { fetchGeo, fetchWeather, fetchRates } from './api.js';
+import { RATES_ALL_SYMBOLS, RATES_DEFAULT_BASE } from './config.js';
 import { initPlanner } from './planner.js';
+import { initTodo } from './todo.js';
 
 async function loadWeather(city) {
   try {
@@ -10,7 +11,6 @@ async function loadWeather(city) {
     renderWeather(weatherData, city);
   } catch (err) {
     console.error('Weather error:', err);
-    // Показать сообщение об ошибке в UI
     const titleEl = document.querySelector('.weather__title');
     titleEl.textContent = 'Не удалось получить погоду';
   }
@@ -42,11 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newCity) return;
     localStorage.setItem('dashboardCity', newCity);
     loadWeather(newCity);
-    weatherInput.value = ""; // Очищаем поле ввода
+    weatherInput.value = '';
   });
 
   // Инициализируем планировщик
   initPlanner();
-  // renderPlanner();
+
+  initTodo();
 
 });
