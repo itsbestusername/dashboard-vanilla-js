@@ -47,7 +47,6 @@ export async function fetchRates(base, symbols) {
 
   // 3) Делаем запрос по адресу RATES_BASE_URL/base
   const url = `${RATES_BASE_URL}/${base}`;
-  console.log('Fetch rates from:', url);
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Rates fetch failed: ${res.status}`);

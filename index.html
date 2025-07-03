@@ -13,76 +13,99 @@
 </head>
 
 <body class="">
-    <div class="dashboard">
-        <section class="weather">
-            <div class="weather__header">
-                <h2 class="weather__title">Погода</h2>
-                <img class="weather__icon" src="./src/assets/icons/погода.png" alt="Иконка погоды" />
-            </div>
-            <form class="weather__form">
-                <input type="text" class="weather-input" list="city-list" placeholder="Введите город" autocomplete="off"
-                    required />
-                <!-- Этот <datalist> будет заполняться опциями через JS -->
-                <datalist id="city-list"></datalist>
-
-                <button type="submit">Обновить</button>
-            </form>
-            <span class="weather__city">——————————————————————</span>
-            <div class="weather__info">
-                <span class="weather__temp">—°C</span>
-                <span class="weather__desc">—</span>
-            </div>
-        </section>
-
-        <section class="finance">
-            <div class="finance__header">
-                <h2>Финансы</h2>
-                <img class="finance__icon" src="./src/assets/icons/деньги.png" alt="Иконка денег" />
-            </div>
-            <div id="finance-container" class="finance__list"></div>
-        </section>
-
-        <section class="todo">
-  <h2>Задачи</h2>
-
-  <!-- Форма для добавления новых задач -->
-  <form class="todo__form">
-    <input
-      type="text"
-      class="todo__input"
-      placeholder="Новая задача"
-      required
-    />
-    <button type="submit" class="todo__add-btn">Добавить</button>
-  </form>
-
-  <!-- Сюда JS будет рендерить <li> -->
-  <ul class="todo__list"></ul>
-</section>
-
-        <section class="planner">
-            <h2>Путешествия</h2>
-
-            <!-- 1) Список путешествий -->
-            <div id="planner-overview">
-                <button class="planner__add-trip">Добавить новое путешествие</button>
-                <div class="trip-list"><!-- здесь JS вставит карточки trip --></div>
-            </div>
-
-            <!-- 2) Детали одного путешествия -->
-            <div id="planner-details" class="hidden">
-                <div class="details__header">
-                    <button class="planner__back">← Назад</button>
-                    <h3 class="details__title"></h3>
-                    <button class="planner__add-day">+ Добавить день</button>
+    <div id="app" class="hidden">
+        <div class="dashboard-header">
+            <button class="logout-btn" type="button">Выйти</button>
+        </div>
+        <div class="dashboard">
+            <section class="weather">
+                <div class="weather__header">
+                    <h2 class="weather__title">Погода</h2>
+                    <img class="weather__icon" src="./src/assets/icons/погода.png" alt="Иконка погоды" />
                 </div>
-                <div class="planner__days"><!-- JS вставит .planner__day --></div>
-                <div class="planner__overall-total">
-                    Общий бюджет: <span class="planner__total-value">0</span>₽
-                </div>
-            </div>
-        </section>
+                <form class="weather__form">
+                    <input type="text" class="weather-input" list="city-list" placeholder="Введите город"
+                        autocomplete="off" required />
+                    <!-- Этот <datalist> будет заполняться опциями через JS -->
+                    <datalist id="city-list"></datalist>
 
+                    <button type="submit">Обновить</button>
+                </form>
+                <span class="weather__city">——————————————————————</span>
+                <div class="weather__info">
+                    <span class="weather__temp">—°C</span>
+                    <span class="weather__desc">—</span>
+                </div>
+            </section>
+
+            <section class="finance">
+                <div class="finance__header">
+                    <h2>Финансы</h2>
+                    <img class="finance__icon" src="./src/assets/icons/деньги.png" alt="Иконка денег" />
+                </div>
+                <div id="finance-container" class="finance__list"></div>
+            </section>
+
+            <section class="todo">
+                <h2>Задачи</h2>
+
+                <!-- Форма для добавления новых задач -->
+                <form class="todo__form">
+                    <input type="text" class="todo__input" placeholder="Новая задача" required />
+                    <button type="submit" class="todo__add-btn">Добавить</button>
+                </form>
+
+                <!-- Сюда JS будет рендерить <li> -->
+                <ul class="todo__list"></ul>
+            </section>
+
+            <section class="planner">
+                <h2>Путешествия</h2>
+
+                <!-- 1) Список путешествий -->
+                <div id="planner-overview">
+                    <button class="planner__add-trip">Добавить новое путешествие</button>
+                    <div class="trip-list"><!-- здесь JS вставит карточки trip --></div>
+                </div>
+
+                <!-- 2) Детали одного путешествия -->
+                <div id="planner-details" class="hidden">
+                    <div class="details__header">
+                        <button class="planner__back">← Назад</button>
+                        <h3 class="details__title"></h3>
+                        <button class="planner__add-day">+ Добавить день</button>
+                    </div>
+                    <div class="planner__days"><!-- JS вставит .planner__day --></div>
+                    <div class="planner__overall-total">
+                        Общий бюджет: <span class="planner__total-value">0</span>₽
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <!-- Форма авторизации -->
+    <div class="auth" id="auth-form">
+        <h2 class="auth__title">Вход</h2>
+        <form class="auth__form">
+            <input type="email" class="auth__input" placeholder="Email" required />
+            <input type="password" class="auth__input" placeholder="Пароль" required />
+            <button type="submit" class="auth__btn auth__btn--login">Войти</button>
+            <button type="button" class="auth__btn auth__btn--register">Зарегистрироваться</button>
+            <div class="auth__error" style="display:none;">Неверный логин или пароль</div>
+        </form>
+    </div>
+    <!-- Форма регистрации -->
+    <div class="auth auth--register" id="register-form" style="display:none;">
+        <h2 class="auth__title">Регистрация</h2>
+        <form class="auth__form">
+            <input type="email" class="auth__input" placeholder="Email" required />
+            <input type="password" class="auth__input" placeholder="Пароль" required />
+            <input type="password" class="auth__input" placeholder="Повторите пароль" required />
+            <button type="submit" class="auth__btn auth__btn--register-submit">Зарегистрироваться</button>
+            <button type="button" class="auth__btn auth__btn--back">Назад</button>
+            <div class="auth__error" style="display:none;">Ошибка регистрации</div>
+        </form>
     </div>
     <footer class="footer">
         <small>&copy; 2025 Travel Planner by Kimi</small>
