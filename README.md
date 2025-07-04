@@ -1,7 +1,6 @@
-# Dashboard Vanilla JS
+# Dashboard Vanilla JS [Ссылка на сайт](https://itsbestusername.github.io/dashboard-vanilla-js/)
 
 Многофункциональный дашборд для путешественников и не только — на чистом JavaScript, с авторизацией через Supabase, планированием поездок, задачами, погодой и курсами валют.
-[Ссылка на сайт](https://itsbestusername.github.io/dashboard-vanilla-js/)
 
 ---
 
