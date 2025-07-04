@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Финансы
     loadFinance();
     // Планнер и туду
-    initPlanner();
-    initTodo();
+    initPlanner(user);
+    initTodo(user);
   });
 
   // Обработчик выхода
@@ -69,4 +69,19 @@ document.addEventListener('DOMContentLoaded', () => {
       showAuth();
     }
   });
+
+  // Обработчик формы погоды
+  const weatherForm = document.querySelector('.weather__form');
+  if (weatherForm) {
+    weatherForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const input = weatherForm.querySelector('.weather-input');
+      const city = input.value.trim();
+      if (city) {
+        localStorage.setItem('dashboardCity', city);
+        loadWeather(city);
+        input.value = '';
+      }
+    });
+  }
 });

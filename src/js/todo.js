@@ -1,17 +1,42 @@
-import { STORAGE_KEY } from './config.js';
+import { supabase } from './supabaseClient.js';
 
-function loadTasks() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let currentUserId = null;
+let todoInitialized = false;
+
+async function loadTasks() {
+  if (!currentUserId) return [];
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('user_id', currentUserId)
+    .order('id', { ascending: false });
+  return data || [];
 }
 
-function saveTasks(tasks) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+async function addTask(text) {
+  if (!currentUserId) return;
+  await supabase.from('tasks').insert([{ user_id: currentUserId, text, done: false }]);
+  renderTasks();
 }
 
-export function renderTasks() {
+async function removeTask(id) {
+  if (!currentUserId) return;
+  await supabase.from('tasks').delete().eq('id', id).eq('user_id', currentUserId);
+  renderTasks();
+}
+
+async function toggleTask(id) {
+  if (!currentUserId) return;
+  const { data } = await supabase.from('tasks').select('done').eq('id', id).single();
+  if (!data) return;
+  await supabase.from('tasks').update({ done: !data.done }).eq('id', id).eq('user_id', currentUserId);
+  renderTasks();
+}
+
+export async function renderTasks() {
   const list = document.querySelector('.todo__list');
-  const tasks = loadTasks();
-  if (tasks.length === 0) {
+  const tasks = await loadTasks();
+  if (!tasks.length) {
     list.innerHTML = "<li class='todo__empty'>Задач нет</li>";
     return;
   }
@@ -24,54 +49,35 @@ export function renderTasks() {
   `).join('');
 }
 
-export function addTask(text) {
-  const tasks = loadTasks();
-  tasks.push({ id: Date.now(), text, done: false });
-  saveTasks(tasks);
-  renderTasks();
-}
-
-export function removeTask(id) {
-  let tasks = loadTasks();
-  tasks = tasks.filter(t => t.id !== id);
-  saveTasks(tasks);
-  renderTasks();
-}
-
-export function toggleTask(id) {
-  const tasks = loadTasks();
-  const task = tasks.find(t => t.id === id);
-  if (task) task.done = !task.done;
-  saveTasks(tasks);
-  renderTasks();
-}
-
-export function initTodo() {
-  // Добавление задачи
+export function initTodo(user) {
+  currentUserId = user.id;
+  if (todoInitialized) {
+    renderTasks();
+    return;
+  }
+  todoInitialized = true;
   const form = document.querySelector('.todo__form');
   const input = form.querySelector('.todo__input');
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text) return;
-    addTask(text);
+    await addTask(text);
     input.value = '';
   });
 
-  // Делегирование по списку: чекбокс и кнопка удаления
   const list = document.querySelector('.todo__list');
-  list.addEventListener('click', e => {
+  list.addEventListener('click', async e => {
     const li = e.target.closest('.todo__item');
     if (!li) return;
     const id = Number(li.dataset.id);
 
     if (e.target.matches('.todo__remove')) {
-      removeTask(id);
+      await removeTask(id);
     } else if (e.target.matches('.todo__checkbox')) {
-      toggleTask(id);
+      await toggleTask(id);
     }
   });
 
-  // Первый рендер
   renderTasks();
 }

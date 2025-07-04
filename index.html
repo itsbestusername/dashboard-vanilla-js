@@ -10,6 +10,11 @@
 
     <link rel="stylesheet" href="./src/css/reset.css" />
     <link rel="stylesheet" href="./src/css/styles.css" />
+    <link rel="stylesheet" href="./src/css/weather.css" />
+    <link rel="stylesheet" href="./src/css/finance.css" />
+    <link rel="stylesheet" href="./src/css/todo.css" />
+    <link rel="stylesheet" href="./src/css/planner.css" />
+    <link rel="stylesheet" href="./src/css/auth.css" />
 </head>
 
 <body class="">
@@ -100,8 +105,8 @@
         <h2 class="auth__title">Регистрация</h2>
         <form class="auth__form">
             <input type="email" class="auth__input" placeholder="Email" required />
-            <input type="password" class="auth__input" placeholder="Пароль" required />
-            <input type="password" class="auth__input" placeholder="Повторите пароль" required />
+            <input type="password" class="auth__input" placeholder="Пароль" name="password" required />
+            <input type="password" class="auth__input" placeholder="Повторите пароль" name="password_repeat" required />
             <button type="submit" class="auth__btn auth__btn--register-submit">Зарегистрироваться</button>
             <button type="button" class="auth__btn auth__btn--back">Назад</button>
             <div class="auth__error" style="display:none;">Ошибка регистрации</div>

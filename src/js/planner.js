@@ -1,8 +1,33 @@
-let trips = JSON.parse(localStorage.getItem('trips')) || [];
-let activeTripId = null;
+import { supabase } from './supabaseClient.js';
 
-function save() {
-  localStorage.setItem('trips', JSON.stringify(trips));
+let trips = [];
+let activeTripId = null;
+let currentUserId = null;
+let plannerInitialized = false;
+
+async function loadTrips() {
+  if (!currentUserId) return [];
+  const { data, error } = await supabase
+    .from('trips')
+    .select('*')
+    .eq('user_id', currentUserId)
+    .order('created_at', { ascending: false });
+  if (!data) return [];
+  return data.map(row => ({ ...row.data, id: row.id }));
+}
+
+async function saveTrips() {
+  if (!currentUserId) return;
+  // Сохраняем каждый trip как отдельную строку
+  for (const trip of trips) {
+    await supabase.from('trips').upsert([
+      {
+        id: trip.id,
+        user_id: currentUserId,
+        data: { ...trip, id: undefined },
+      }
+    ]);
+  }
 }
 
 function calcDayTotal(day) {
@@ -22,14 +47,13 @@ function renderOverview() {
       <button class='trip__remove'>&times;</button>
     </div>
   `).join('');
-  // Добавим обработчики для input
   document.querySelectorAll('.trip__title-input').forEach(input => {
-    input.addEventListener('input', function (e) {
+    input.addEventListener('input', async function (e) {
       const tripId = Number(e.target.closest('.trip').dataset.id);
       const trip = trips.find(t => t.id === tripId);
       if (trip) {
         trip.title = e.target.value;
-        save();
+        await saveTrips();
       }
     });
   });
@@ -78,65 +102,60 @@ function showDetails() {
   renderDetails();
 }
 
-export function addTrip() {
+export async function addTrip() {
   const id = Date.now();
   trips.push({ id, title: '', days: [] });
-  save();
+  await saveTrips();
   renderOverview();
 }
 
-export function removeTrip(id) {
+export async function removeTrip(id) {
   trips = trips.filter(t => t.id !== id);
-  save();
-  showOverview();
+  await supabase.from('trips').delete().eq('id', id).eq('user_id', currentUserId);
+  renderOverview();
 }
 
-export function openTrip(id) {
+export async function openTrip(id) {
   activeTripId = id;
   showDetails();
 }
 
-export function addDay() {
+export async function addDay() {
   const trip = trips.find(t => t.id === activeTripId);
   if (!trip) return;
-  const newDay = {
-    id: Date.now(),
-    title: '',
-    slots: []
-  };
-  trip.days.push(newDay);
-  save();
+  trip.days.push({ id: Date.now(), title: '', slots: [] });
+  await saveTrips();
   renderDetails();
 }
 
-export function removeDay(dayId) {
+export async function removeDay(dayId) {
   const trip = trips.find(t => t.id === activeTripId);
   if (!trip) return;
   trip.days = trip.days.filter(d => d.id !== dayId);
-  save();
+  await saveTrips();
   renderDetails();
 }
 
-export function updateDayTitle(dayId, value) {
+export async function updateDayTitle(dayId, value) {
   const trip = trips.find(t => t.id === activeTripId);
   const day = trip.days.find(d => d.id === dayId);
   day.title = value;
-  save();
+  await saveTrips();
 }
 
-export function addSlot(dayId) {
+export async function addSlot(dayId) {
   const trip = trips.find(t => t.id === activeTripId);
   const day = trip.days.find(d => d.id === dayId);
   day.slots.push({ id: Date.now(), time: '', description: '', cost: 0 });
-  save();
+  await saveTrips();
   renderDetails();
 }
 
-export function removeSlot(dayId, slotId) {
+export async function removeSlot(dayId, slotId) {
   const trip = trips.find(t => t.id === activeTripId);
   const day = trip.days.find(d => d.id === dayId);
   day.slots = day.slots.filter(s => s.id !== slotId);
-  save();
+  await saveTrips();
   renderDetails();
 }
 
@@ -158,7 +177,7 @@ function updateOverallTotalInDOM() {
   if (span) span.textContent = overall;
 }
 
-export function updateSlot(dayId, slotId, field, value) {
+export async function updateSlot(dayId, slotId, field, value) {
   const trip = trips.find(t => t.id === activeTripId);
   if (!trip) return;
   const day = trip.days.find(d => d.id === dayId);
@@ -166,41 +185,48 @@ export function updateSlot(dayId, slotId, field, value) {
   const slot = day.slots.find(s => s.id === slotId);
   if (!slot) return;
   slot[field] = field === 'cost' ? Number(value) : value;
-  save();
+  await saveTrips();
   if (field === 'cost') {
     updateDayTotalInDOM(dayId);
     updateOverallTotalInDOM();
   }
 }
 
-export function initPlanner() {
+export async function initPlanner(user) {
+  currentUserId = user.id;
+  trips = await loadTrips();
+  if (plannerInitialized) {
+    renderOverview();
+    return;
+  }
+  plannerInitialized = true;
   document.querySelector('.planner__add-trip').addEventListener('click', addTrip);
-  document.querySelector('.trip-list').addEventListener('click', e => {
+  document.querySelector('.trip-list').addEventListener('click', async e => {
     const id = Number(e.target.closest('.trip').dataset.id);
-    if (e.target.matches('.trip__remove')) removeTrip(id);
-    else if (e.target.matches('.trip__open')) openTrip(id);
+    if (e.target.matches('.trip__remove')) await removeTrip(id);
+    else if (e.target.matches('.trip__open')) await openTrip(id);
   });
   document.querySelector('.planner__back').addEventListener('click', showOverview);
   document.querySelector('.planner__add-day').addEventListener('click', addDay);
-  document.querySelector('#planner-details').addEventListener('click', e => {
+  document.querySelector('#planner-details').addEventListener('click', async e => {
     const dayEl = e.target.closest('.planner__day');
     if (!dayEl) return;
     const dayId = Number(dayEl.dataset.id);
-    if (e.target.matches('.day__remove')) removeDay(dayId);
-    if (e.target.matches('.day__add-slot')) addSlot(dayId);
+    if (e.target.matches('.day__remove')) await removeDay(dayId);
+    if (e.target.matches('.day__add-slot')) await addSlot(dayId);
     if (e.target.matches('.slot__remove')) {
       const slotId = Number(e.target.closest('.slot').dataset.id);
-      removeSlot(dayId, slotId);
+      await removeSlot(dayId, slotId);
     }
   });
-  document.querySelector('#planner-details').addEventListener('input', e => {
+  document.querySelector('#planner-details').addEventListener('input', async e => {
     const dayEl = e.target.closest('.planner__day');
     if (!dayEl) return;
     const dayId = Number(dayEl.dataset.id);
-    if (e.target.matches('.day__title')) updateDayTitle(dayId, e.target.value);
-    if (e.target.matches('.slot__time')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'time', e.target.value);
-    if (e.target.matches('.slot__desc')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'description', e.target.value);
-    if (e.target.matches('.slot__cost')) updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'cost', e.target.value);
+    if (e.target.matches('.day__title')) await updateDayTitle(dayId, e.target.value);
+    if (e.target.matches('.slot__time')) await updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'time', e.target.value);
+    if (e.target.matches('.slot__desc')) await updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'description', e.target.value);
+    if (e.target.matches('.slot__cost')) await updateSlot(dayId, Number(e.target.closest('.slot').dataset.id), 'cost', e.target.value);
   });
   showOverview();
 }

@@ -35,6 +35,9 @@ export function initAuth(onSignIn) {
       loginError.style.display = 'block';
       return;
     }
+    // Очистка полей после успешного входа
+    loginForm.querySelector('input[type="email"]').value = '';
+    loginForm.querySelector('input[type="password"]').value = '';
     showDashboard();
     onSignIn(data.user);
   });
@@ -42,16 +45,23 @@ export function initAuth(onSignIn) {
   // --- Регистрация ---
   const registerForm = document.querySelector('#register-form .auth__form');
   const registerError = document.querySelector('#register-form .auth__error');
+  const pass1Input = registerForm.querySelector('input[name="password"]');
+  const pass2Input = registerForm.querySelector('input[name="password_repeat"]');
   registerForm.addEventListener('submit', async e => {
     e.preventDefault();
     registerError.style.display = 'none';
     const email = registerForm.querySelector('input[type="email"]').value.trim();
-    const pass1 = registerForm.querySelectorAll('input[type="password"]')[0].value;
-    const pass2 = registerForm.querySelectorAll('input[type="password"]')[1].value;
+    const pass1 = pass1Input.value;
+    const pass2 = pass2Input.value;
     if (pass1 !== pass2) {
       registerError.textContent = 'Пароли не совпадают';
       registerError.style.display = 'block';
+      pass1Input.classList.add('input-error');
+      pass2Input.classList.add('input-error');
       return;
+    } else {
+      pass1Input.classList.remove('input-error');
+      pass2Input.classList.remove('input-error');
     }
     const { data, error } = await supabase.auth.signUp({ email, password: pass1 });
     if (error) {
@@ -59,7 +69,10 @@ export function initAuth(onSignIn) {
       registerError.style.display = 'block';
       return;
     }
-    // После успешной регистрации можно сразу залогинить пользователя или показать сообщение
+    // Очистка полей после успешной регистрации
+    registerForm.querySelector('input[type="email"]').value = '';
+    pass1Input.value = '';
+    pass2Input.value = '';
     showDashboard();
     onSignIn(data.user);
   });
