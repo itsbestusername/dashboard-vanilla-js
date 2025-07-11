@@ -13,15 +13,6 @@
     box-shadow: 0 8px 40px 0 rgba(60, 120, 255, 0.18);
 }
 
-.todo h2 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    margin-bottom: 18px;
-    color: #23272f;
-    letter-spacing: 0.01em;
-    text-align: center;
-}
-
 .todo__list {
     min-height: 48px;
     background: #f6f7fb;
@@ -100,44 +91,35 @@
     justify-content: center;
 }
 
-.todo__input {
-    flex: 1 1 auto;
-    font-size: 1.08rem;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1.5px solid #ece9f6;
-    background: #f6f7fb;
-    color: #23272f;
-    transition: border 0.18s, background 0.18s;
-}
-
-.todo__input:focus {
-    outline: none;
-    border-color: #5a8fff;
-    background: #e6f0ff;
-}
-
-.todo__add-btn {
-    background: linear-gradient(90deg, #f7b84b 0%, #5a8fff 100%);
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.08rem;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 22px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.18s;
-    box-shadow: 0 2px 8px 0 rgba(90, 143, 255, 0.10);
-}
-
-.todo__add-btn:hover {
-    background: linear-gradient(90deg, #5a8fff 0%, #f7b84b 100%);
-    color: #23272f;
-}
-
 .todo__empty {
     color: #b0b6c1;
     text-align: center;
     font-size: 1.08rem;
     padding: 12px 0;
+}
+
+.todo__form .input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.todo__form .btn {
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+@media (max-width: 480px) {
+    .todo__form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .todo__form .input,
+    .todo__form .btn {
+        width: 100%;
+        margin-left: 0;
+    }
 }

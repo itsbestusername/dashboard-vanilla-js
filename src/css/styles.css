@@ -1,5 +1,4 @@
 body {
-    min-height: 100vh;
     margin: 0;
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     background: linear-gradient(135deg, #f6f7fb 0%, #ece9f6 100%);
@@ -16,6 +15,18 @@ body {
     margin: 40px auto;
     background: transparent;
     box-sizing: border-box;
+}
+
+@media (min-width: 1023px) {
+    .dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 32px;
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0;
+    }
 }
 
 .weather,
@@ -64,4 +75,160 @@ body {
     justify-content: flex-end;
     align-items: center;
     padding: 24px 48px 0 48px;
+}
+
+
+@media (max-width: 1023px) {
+    .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 98vw;
+        margin: 24px auto;
+        padding: 0 4vw;
+    }
+
+    .weather,
+    .finance,
+    .todo,
+    .planner {
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+        padding: 24px 8px;
+        box-sizing: border-box;
+    }
+
+    .dashboard-header {
+        padding: 16px 4vw 0 4vw;
+    }
+}
+
+/* Смартфоны: ещё меньше отступы и шрифты */
+@media (max-width: 480px) {
+    .dashboard {
+        gap: 16px;
+        padding: 0 2vw;
+    }
+
+    .weather,
+    .finance,
+    .todo,
+    .planner {
+        padding: 14px 2px;
+        border-radius: 14px;
+    }
+
+    .weather h2,
+    .finance h2,
+    .todo h2,
+    .planner h2 {
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+    }
+
+    .footer {
+        font-size: 0.85rem;
+        margin-top: 18px;
+    }
+}
+
+/* Ноутбуки: чуть меньше максимальная ширина */
+@media (max-width: 1440px) {
+    .dashboard {
+        max-width: 1060px;
+    }
+}
+
+/* Full HD и выше: увеличиваем максимальную ширину */
+@media (min-width: 1920px) {
+    .dashboard {
+        max-width: 1400px;
+    }
+}
+
+/* QHD и выше: ещё шире */
+@media (min-width: 2560px) {
+    .dashboard {
+        max-width: 1800px;
+    }
+}
+
+/* === Общие стили для блоков дашборда === */
+.dashboard-block {
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.08);
+    padding: 32px 36px;
+    border: none;
+    transition: box-shadow 0.2s;
+}
+
+.dashboard-block:hover {
+    box-shadow: 0 8px 40px 0 rgba(60, 120, 255, 0.18);
+}
+
+.dashboard-block__title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #23272f;
+    letter-spacing: 0.01em;
+    text-align: center;
+}
+
+/* === Общие стили для кнопок и инпутов === */
+.btn {
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.08rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.18s;
+    box-shadow: 0 2px 8px 0 rgba(90, 143, 255, 0.10);
+    padding: 10px 22px;
+}
+
+.btn--gradient {
+    background: linear-gradient(90deg, #f7b84b 0%, #5a8fff 100%);
+    color: #fff;
+}
+
+.btn--gradient:hover {
+    background: linear-gradient(90deg, #5a8fff 0%, #f7b84b 100%);
+    color: #23272f;
+}
+
+.input {
+    font-size: 1.08rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #ece9f6;
+    background: #f6f7fb;
+    color: #23272f;
+    transition: border 0.18s, background 0.18s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #5a8fff;
+    background: #e6f0ff;
+}
+
+@media (max-width: 480px) {
+    .dashboard-block {
+        padding: 14px 2px;
+        border-radius: 14px;
+    }
+
+    .dashboard-block__title {
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+    }
+
+    .btn,
+    .input {
+        font-size: 1rem;
+        padding: 10px 8px;
+    }
 }

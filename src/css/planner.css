@@ -16,15 +16,6 @@
     box-shadow: 0 8px 40px 0 rgba(60, 120, 255, 0.18);
 }
 
-.planner h2 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    margin-bottom: 18px;
-    color: #23272f;
-    letter-spacing: 0.01em;
-    text-align: center;
-}
-
 .planner__add-day,
 .planner__add-trip {
     padding: 12px 26px;
@@ -361,4 +352,263 @@
     border-color: #5a8fff;
     background: #e6f0ff;
     color: #23272f;
+}
+
+@media (max-width: 480px) {
+    .trip-list {
+        gap: 10px;
+    }
+
+    .trip {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px 6px;
+        font-size: 0.98rem;
+        word-break: break-word;
+    }
+
+    .trip strong {
+        font-size: 1rem;
+        word-break: break-word;
+    }
+
+    .trip__open,
+    .trip__remove {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 6px;
+        font-size: 0.98rem;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+
+    .planner__day {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 4px;
+        font-size: 0.98rem;
+        word-break: break-word;
+    }
+
+    .day__header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+
+    .day__title {
+        font-size: 1rem;
+        padding: 4px 0;
+    }
+
+    .day__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 0.98rem;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+
+    .slot {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 6px 2px;
+        font-size: 0.97rem;
+        word-break: break-word;
+    }
+
+    .slot__time,
+    .slot__desc,
+    .slot__cost {
+        width: 100%;
+        font-size: 0.97rem;
+        padding: 4px 0;
+        box-sizing: border-box;
+    }
+
+    .slot__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 0.97rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+    }
+
+    .day__actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        margin-top: 4px;
+        width: 100%;
+    }
+
+    .day__add-slot,
+    .day__total {
+        width: 100%;
+        font-size: 0.97rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 1023px) {
+    .planner__day {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 14px 6px;
+        font-size: 1.05rem;
+        word-break: break-word;
+    }
+
+    .day__header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .day__title {
+        font-size: 1.03rem;
+        padding: 4px 0;
+    }
+
+    .day__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 1.03rem;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+
+    .slot {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 8px 2px;
+        font-size: 1.03rem;
+        word-break: break-word;
+    }
+
+    .slot__time,
+    .slot__desc,
+    .slot__cost {
+        width: 100%;
+        font-size: 1.03rem;
+        padding: 4px 0;
+        box-sizing: border-box;
+    }
+
+    .slot__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 1.03rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+    }
+
+    .day__actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 6px;
+        width: 100%;
+    }
+
+    .day__add-slot,
+    .day__total {
+        width: 100%;
+        font-size: 1.03rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 1366px) {
+    .planner__day {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 14px 6px;
+        font-size: 1.05rem;
+        word-break: break-word;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .day__header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 6px;
+        max-width: 100%;
+    }
+
+    .day__title {
+        font-size: 1.03rem;
+        padding: 4px 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .day__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 1.03rem;
+        padding: 8px 0;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .slot {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 8px 2px;
+        font-size: 1.03rem;
+        word-break: break-word;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .slot__time,
+    .slot__desc,
+    .slot__cost {
+        width: 100%;
+        font-size: 1.03rem;
+        padding: 4px 0;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .slot__remove {
+        width: 100%;
+        margin: 0;
+        font-size: 1.03rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .day__actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 6px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .day__add-slot,
+    .day__total {
+        width: 100%;
+        font-size: 1.03rem;
+        padding: 7px 0;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
 }

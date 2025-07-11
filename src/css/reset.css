@@ -6,17 +6,16 @@
   padding: 0;
 }
 
-/* 2. Удаляем стили списка и якорей */
 ul,
 ol {
   list-style: none;
 }
+
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 3. Убираем рамки и фон у кнопок и форм */
 button,
 input,
 select,
@@ -27,7 +26,6 @@ textarea {
   font: inherit;
 }
 
-/* 4. Делаем изображение и медиа адаптивным и блочным */
 img,
 picture,
 video,
@@ -38,32 +36,33 @@ svg {
   height: auto;
 }
 
-/* 5. Сбрасываем вертикальный выравниватель */
-html, body {
-  height: 100%;
+html,
+body {
+  height: auto;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
 
-/* 6. Удаляем границы у полей ввода и textarea */
 input,
 textarea {
   border: none;
 }
 
-/* 7. Таблица по умолчанию */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* 8. Убираем стандартные стили у заголовков */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-size: inherit;
   font-weight: inherit;
 }
 
-/* 9. Глобальные теги */
 body {
   font-family: sans-serif;
   background-color: #fff;
